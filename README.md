@@ -20,50 +20,82 @@ A complete city information and plot application system for ComputerCraft using 
 
 ## Installation
 
+### Installing Basalt2
+
+First, install Basalt2 on all computers (server and clients):
+
+```bash
+wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/release/basalt-full.lua basalt.lua
+```
+
 ### Server Installation
 
-1. Run the server installer:
+1. Download and install the server using wget:
    ```bash
-   lua installServer.lua
+   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaServer.lua rotariaServer.lua
    ```
 
-   Or for quick install:
+2. Start the server:
    ```bash
-   lua installServer.lua -q
+   local server = require("rotariaServer")
+   server.runServer()
    ```
 
-2. The installer will:
-   - Copy server files to the installation directory (default: `cityServer`)
-   - Configure encryption and password settings (same as CogMail)
-   - Optionally set up automatic startup
-
-3. Start the server:
+   Or create a startup file:
    ```bash
-   cd cityServer
-   lua main.lua
+   echo 'local server = require("rotariaServer"); server.runServer()' > startup.lua
    ```
 
-### Client Installation
+### Mayor Client Installation
 
-1. Run the client installer:
+1. Download and install the mayor client using wget:
    ```bash
-   lua installClient.lua
+   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaClientMayor.lua rotariaClientMayor.lua
    ```
 
-   Or for quick install:
+2. Start the mayor client:
    ```bash
-   lua installClient.lua -q
+   local client = require("rotariaClientMayor")
+   client.runClient()
    ```
 
-2. The installer will:
-   - Copy client files to the installation directory (default: `cityClient`)
-   - Optionally set up automatic startup
-
-3. Start the client:
+   Or create a startup file:
    ```bash
-   cd cityClient
-   lua main.lua
+   echo 'local client = require("rotariaClientMayor"); client.runClient()' > startup.lua
    ```
+
+### Citizen Client Installation
+
+1. Download and install the citizen client using wget:
+   ```bash
+   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaClientCitizen.lua rotariaClientCitizen.lua
+   ```
+
+2. Start the citizen client:
+   ```bash
+   local client = require("rotariaClientCitizen")
+   client.runClient()
+   ```
+
+   Or create a startup file:
+   ```bash
+   echo 'local client = require("rotariaClientCitizen"); client.runClient()' > startup.lua
+   ```
+
+## Initial Mayor Account
+
+When the server starts for the first time, it automatically creates a default mayor (admin) account:
+
+- **Username**: `Rotaria City`
+- **Password**: `Rotaria!0!`
+
+**Important**: Change this password immediately after first login for security!
+
+You can use this account to:
+- Create additional mayor accounts
+- Manage all mayor accounts
+- Review and approve/reject plot applications
+- Create and manage city information tabs
 
 ## Configuration
 
@@ -87,68 +119,28 @@ set email.password_salt your_custom_salt
 
 ## Usage
 
-### Creating Accounts
+### Mayor (Admin) Features
 
-1. Start the client
-2. Click "Create Account"
-3. Enter username and password
-4. Select account type (Citizen or Admin)
-5. Click "Create Account"
+- **Create Mayor Account**: Create additional mayor accounts
+- **All Mayor Accounts**: View and manage all mayor accounts (can delete accounts)
+- **Plot Applications**: Review pending plot applications
+  - View application details
+  - Accept or reject applications
+- **Info Tabs**: Create and manage city information tabs
+  - Create new tabs
+  - Edit existing tabs
+  - Delete tabs
 
 ### Citizen Features
 
-- **Info**: View city information
+- **Info**: View city information tabs (no login required)
 - **Plot Application**: Submit a plot application with:
   - In-game name
   - Plot number/location
   - Build description
   - Estimated size & style
   - Reason for wanting the plot
-
-### Admin Features
-
-- **All Users**: View list of all registered users
-- **Plot Applications**: Review pending plot applications
-  - View application details
-  - Accept or reject applications
-
-## File Structure
-
-```
-RotariaMayoralDashboard/
-├── server/
-│   ├── encryption.lua      # Encryption/decryption module
-│   ├── accounts.lua         # Account management
-│   ├── plots.lua            # Plot applications management
-│   ├── cityinfo.lua         # City information management
-│   ├── protocol.lua         # Network protocol handler
-│   └── main.lua             # Server entry point
-├── client/
-│   ├── network.lua          # Network communication
-│   ├── utils.lua            # Utility functions
-│   ├── main.lua             # Client entry point
-│   ├── components/
-│   │   └── header.lua       # Header component
-│   └── screens/
-│       ├── login.lua        # Login screen
-│       ├── account_creation.lua
-│       ├── citizen_dashboard.lua
-│       ├── mayor_dashboard.lua
-│       ├── info.lua
-│       ├── plot_application.lua
-│       ├── user_list.lua
-│       └── plot_review.lua
-├── installServer.lua
-├── installClient.lua
-└── README.md
-```
-
-## Security
-
-- Passwords are hashed using salted hashing (same algorithm as CogMail)
-- All sensitive data (plots, city info) is encrypted on disk
-- Authentication is required for all endpoints
-- Admin-only endpoints verify account type
+  - (No login required)
 
 ## Network Protocol
 
@@ -164,8 +156,8 @@ RotariaMayoralDashboard/
 - Verify network connectivity
 
 ### Basalt not found
-- Install Basalt2: `wget run https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/release/basalt-full.lua basalt.lua`
-- Or place basalt.lua in the client directory
+- Install Basalt2: `wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/release/basalt-full.lua basalt.lua`
+- Or place basalt.lua in the same directory as the client
 
 ### Authentication errors
 - Verify encryption keys match between server and client
@@ -174,4 +166,3 @@ RotariaMayoralDashboard/
 ## License
 
 This project follows the same structure and security practices as CogMail.
-
