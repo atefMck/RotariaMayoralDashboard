@@ -1,9 +1,10 @@
 -- Network Communication Module
 local Network = {}
 
+-- Load configuration first to set global constants
+require("config")
+
 local modem = peripheral.find("modem") or error("No modem attached", 0)
-local SERVER_CHANNEL = 100
-local CLIENT_CHANNEL = 200
 
 -- Open both channels - server channel for sending requests, client channel for receiving responses
 modem.open(SERVER_CHANNEL)

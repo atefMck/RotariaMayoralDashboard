@@ -5,20 +5,44 @@
 local VERSION = "1.0.0"
 
 -- ============================================================================
+-- Configuration Module
+-- ============================================================================
+local Config = {}
+
+-- Define and load channel settings
+settings.define("mayor.server_channel", {
+    description = "Server communication channel",
+    default = 100,
+    type = "number"
+})
+
+settings.define("mayor.client_channel", {
+    description = "Client communication channel",
+    default = 200,
+    type = "number"
+})
+
+settings.load()
+
+-- Global constants
+SERVER_CHANNEL = settings.get("mayor.server_channel") or 100
+CLIENT_CHANNEL = settings.get("mayor.client_channel") or 200
+
+-- ============================================================================
 -- Encryption Module
 -- ============================================================================
 local Encryption = {}
 
--- Define and load encryption key from settings (same as CogMail)
-settings.define("email.encryption_key", {
+-- Define and load encryption key from settings
+settings.define("mayor.encryption_key", {
     description = "Encryption key for city server data",
-    default = "email_server_key_2024",
+    default = "mayor_server_key_2024",
     type = "string"
 })
 settings.load()
 
 function Encryption.encrypt(data, key)
-    key = key or settings.get("email.encryption_key")
+    key = key or settings.get("mayor.encryption_key")
     if type(data) ~= "string" then
         data = textutils.serialize(data)
     end
@@ -33,7 +57,7 @@ function Encryption.encrypt(data, key)
 end
 
 function Encryption.decrypt(encrypted, key)
-    key = key or settings.get("email.encryption_key")
+    key = key or settings.get("mayor.encryption_key")
     local decrypted = {}
     local keyLen = #key
     for i = 1, #encrypted do
@@ -54,17 +78,17 @@ local ACCOUNTS_FILE = "accounts.dat"
 local accounts = {}
 local nextAccountId = 1
 
--- Define and load password salt from settings (same as CogMail)
-settings.define("email.password_salt", {
+-- Define and load password salt from settings
+settings.define("mayor.password_salt", {
     description = "Salt key for password hashing",
-    default = "email_server_salt_2024",
+    default = "mayor_server_salt_2024",
     type = "string"
 })
 settings.load()
 
--- Password hashing function (same as CogMail)
+-- Password hashing function
 local function hashPassword(password, salt)
-    salt = salt or settings.get("email.password_salt")
+    salt = salt or settings.get("mayor.password_salt")
     local hash = password .. salt
     
     -- Multiple rounds of transformation for better security
@@ -576,7 +600,7 @@ function Protocol.handleCreateAccount(replyChannel, modem, data)
         account = success and {id = result.id, username = result.username, accountType = result.accountType} or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleLogin(replyChannel, modem, data)
@@ -592,7 +616,7 @@ function Protocol.handleLogin(replyChannel, modem, data)
         account = success and {id = result.id, username = result.username, accountType = result.accountType} or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetAccountInfo(replyChannel, modem, data)
@@ -606,7 +630,7 @@ function Protocol.handleGetAccountInfo(replyChannel, modem, data)
             success = false,
             message = "Authentication required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -617,7 +641,7 @@ function Protocol.handleGetAccountInfo(replyChannel, modem, data)
         message = "Account found"
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetAllUsers(replyChannel, modem, data)
@@ -631,7 +655,7 @@ function Protocol.handleGetAllUsers(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -651,7 +675,7 @@ function Protocol.handleGetAllUsers(replyChannel, modem, data)
         users = safeAccounts
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleCreatePlotApplication(replyChannel, modem, data)
@@ -665,7 +689,7 @@ function Protocol.handleCreatePlotApplication(replyChannel, modem, data)
             success = false,
             message = "Authentication required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -684,7 +708,7 @@ function Protocol.handleCreatePlotApplication(replyChannel, modem, data)
         plot = success and {id = result.id} or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleCreatePlotApplicationPublic(replyChannel, modem, data)
@@ -704,7 +728,7 @@ function Protocol.handleCreatePlotApplicationPublic(replyChannel, modem, data)
         plot = success and {id = result.id} or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetPlotApplications(replyChannel, modem, data)
@@ -718,7 +742,7 @@ function Protocol.handleGetPlotApplications(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -752,7 +776,7 @@ function Protocol.handleGetPlotApplications(replyChannel, modem, data)
         plots = safePlots
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetMyPlots(replyChannel, modem, data)
@@ -766,7 +790,7 @@ function Protocol.handleGetMyPlots(replyChannel, modem, data)
             success = false,
             message = "Authentication required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -778,7 +802,7 @@ function Protocol.handleGetMyPlots(replyChannel, modem, data)
         plots = userPlots
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleUpdatePlotStatus(replyChannel, modem, data)
@@ -794,7 +818,7 @@ function Protocol.handleUpdatePlotStatus(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -807,7 +831,7 @@ function Protocol.handleUpdatePlotStatus(replyChannel, modem, data)
         plot = success and result or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetCityInfo(replyChannel, modem, data)
@@ -821,7 +845,7 @@ function Protocol.handleGetCityInfo(replyChannel, modem, data)
             success = false,
             message = "Authentication required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -833,7 +857,7 @@ function Protocol.handleGetCityInfo(replyChannel, modem, data)
         cityInfo = info
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetCityInfoPublic(replyChannel, modem, data)
@@ -846,7 +870,7 @@ function Protocol.handleGetCityInfoPublic(replyChannel, modem, data)
         tabs = tabs
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleGetAllInfoTabs(replyChannel, modem, data)
@@ -860,7 +884,7 @@ function Protocol.handleGetAllInfoTabs(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -872,7 +896,7 @@ function Protocol.handleGetAllInfoTabs(replyChannel, modem, data)
         tabs = tabs
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleCreateInfoTab(replyChannel, modem, data)
@@ -888,7 +912,7 @@ function Protocol.handleCreateInfoTab(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -901,7 +925,7 @@ function Protocol.handleCreateInfoTab(replyChannel, modem, data)
         tab = success and result or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleUpdateInfoTab(replyChannel, modem, data)
@@ -918,7 +942,7 @@ function Protocol.handleUpdateInfoTab(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -931,7 +955,7 @@ function Protocol.handleUpdateInfoTab(replyChannel, modem, data)
         tab = success and result or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleDeleteInfoTab(replyChannel, modem, data)
@@ -946,7 +970,7 @@ function Protocol.handleDeleteInfoTab(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -958,7 +982,7 @@ function Protocol.handleDeleteInfoTab(replyChannel, modem, data)
         message = success and "Tab deleted successfully" or result
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleUpdateCityInfo(replyChannel, modem, data)
@@ -974,7 +998,7 @@ function Protocol.handleUpdateCityInfo(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -987,7 +1011,7 @@ function Protocol.handleUpdateCityInfo(replyChannel, modem, data)
         cityInfo = success and result or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleChangeAccountType(replyChannel, modem, data)
@@ -1003,7 +1027,7 @@ function Protocol.handleChangeAccountType(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -1016,7 +1040,7 @@ function Protocol.handleChangeAccountType(replyChannel, modem, data)
         account = success and {id = result.id, username = result.username, accountType = result.accountType} or nil
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.handleDeleteAccount(replyChannel, modem, data)
@@ -1031,7 +1055,7 @@ function Protocol.handleDeleteAccount(replyChannel, modem, data)
             success = false,
             message = "Admin access required"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -1042,7 +1066,7 @@ function Protocol.handleDeleteAccount(replyChannel, modem, data)
             success = false,
             message = "Cannot delete your own account"
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
         return
     end
     
@@ -1054,7 +1078,7 @@ function Protocol.handleDeleteAccount(replyChannel, modem, data)
         message = success and "Account deleted" or result
     }
     
-    modem.transmit(replyChannel, 100, response)
+    modem.transmit(replyChannel, CLIENT_CHANNEL, response)
 end
 
 function Protocol.processMessage(channel, replyChannel, message, distance, modem)
@@ -1105,7 +1129,7 @@ function Protocol.processMessage(channel, replyChannel, message, distance, modem
             type = "error",
             message = "Unknown message type: " .. tostring(msgType)
         }
-        modem.transmit(replyChannel, 100, response)
+        modem.transmit(replyChannel, CLIENT_CHANNEL, response)
     end
 end
 
@@ -1121,8 +1145,7 @@ local VERSION = "1.0.0"
 -- Accounts, Plots, CityInfo, Protocol modules loaded above
 
 local modem = peripheral.find("modem") or error("No modem attached", 0)
-local SERVER_CHANNEL = 100
-local CLIENT_CHANNEL = 200
+-- SERVER_CHANNEL and CLIENT_CHANNEL are global constants from Config module
 
 -- Initialize Server
 print("=== Rotaria City Server Starting ===")
@@ -1136,12 +1159,12 @@ Plots.load()
 CityInfo.load()
 
 -- Create default admin account if it doesn't exist
-local defaultAdmin = Accounts.findByUsername("Rotaria City")
+local defaultAdmin = Accounts.findByUsername("Rotaria")
 if not defaultAdmin then
     print("Creating default admin account...")
-    local success, result = Accounts.create("Rotaria City", "Rotaria!0!", "admin")
+    local success, result = Accounts.create("Rotaria", "Rotaria", "admin")
     if success then
-        print("Default admin account created: Rotaria City")
+        print("Default admin account created: Rotaria")
     else
         print("Warning: Failed to create default admin account: " .. tostring(result))
     end
@@ -1162,13 +1185,19 @@ print("  - update_city_info: Update city information (admin only)")
 print("")
 
 -- Event Loop
-while true do
+local running = true
+while running do
     local success, err = pcall(function()
-        local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+        local event, side, channel, replyChannel, message, distance = os.pullEvent()
         
-        if channel == SERVER_CHANNEL then
-            print("Received message on channel " .. channel .. " from reply channel " .. replyChannel)
-            Protocol.processMessage(channel, replyChannel, message, distance, modem)
+        if event == "terminate" then
+            print("Server shutdown requested...")
+            running = false
+        elseif event == "modem_message" then
+            if channel == SERVER_CHANNEL then
+                print("Received message on channel " .. channel .. " from reply channel " .. replyChannel)
+                Protocol.processMessage(channel, replyChannel, message, distance, modem)
+            end
         end
     end)
     
@@ -1177,6 +1206,8 @@ while true do
         -- Continue running the server even if there's an error
     end
 end
+
+print("Server stopped.")
 
 end
 

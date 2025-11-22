@@ -3,14 +3,15 @@
 -- Version Information
 local VERSION = "1.0.0"
 
+-- Load configuration first to set global constants
+require("config")
+
 local Accounts = require("accounts")
 local Plots = require("plots")
 local CityInfo = require("cityinfo")
 local Protocol = require("protocol")
 
 local modem = peripheral.find("modem") or error("No modem attached", 0)
-local SERVER_CHANNEL = 100
-local CLIENT_CHANNEL = 200
 
 -- Initialize Server
 print("=== Rotaria City Server Starting ===")
@@ -58,7 +59,6 @@ while running do
         if event == "terminate" then
             print("Server shutdown requested...")
             running = false
-            break
         elseif event == "modem_message" then
             if channel == SERVER_CHANNEL then
                 print("Received message on channel " .. channel .. " from reply channel " .. replyChannel)

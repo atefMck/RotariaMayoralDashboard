@@ -5,6 +5,30 @@
 local CLIENT_VERSION = "1.0.0"
 
 -- ============================================================================
+-- Configuration Module
+-- ============================================================================
+local Config = {}
+
+-- Define and load channel settings
+settings.define("mayor.server_channel", {
+    description = "Server communication channel",
+    default = 100,
+    type = "number"
+})
+
+settings.define("mayor.client_channel", {
+    description = "Client communication channel",
+    default = 200,
+    type = "number"
+})
+
+settings.load()
+
+-- Global constants
+SERVER_CHANNEL = settings.get("mayor.server_channel") or 100
+CLIENT_CHANNEL = settings.get("mayor.client_channel") or 200
+
+-- ============================================================================
 -- Utils Module
 -- ============================================================================
 local Utils = {}
@@ -49,8 +73,7 @@ end
 local Network = {}
 
 local modem = peripheral.find("modem") or error("No modem attached", 0)
-local SERVER_CHANNEL = 100
-local CLIENT_CHANNEL = 200
+-- SERVER_CHANNEL and CLIENT_CHANNEL are global constants from Config module
 
 -- Open both channels - server channel for sending requests, client channel for receiving responses
 modem.open(SERVER_CHANNEL)

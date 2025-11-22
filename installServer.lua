@@ -46,8 +46,21 @@ if (args[1] == "-q") or (args[1] == "--quick") then
         type = "string"
     })
     
+    settings.define("mayor.server_channel", {
+        description = "Server communication channel",
+        default = 100,
+        type = "number"
+    })
+    
+    settings.define("mayor.client_channel", {
+        description = "Client communication channel",
+        default = 200,
+        type = "number"
+    })
+    
     settings.load()
     settings.save()
+    print("Channel settings configured (Server: 100, Client: 200)")
     
     print("Server installed to: " .. installPath)
     print("To run: local server = require(\"" .. installPath:gsub(".lua", "") .. "\"); server.runServer()")
@@ -202,11 +215,35 @@ local passwordSaltInput = configScreen:addInput()
     :setText("mayor_server_salt_2024")
 
 configScreen:addLabel(coloring)
-    :setText("Installation Path:")
+    :setText("Server Channel:")
     :setPosition(2, 10)
 
-local installPathInput = configScreen:addInput()
+local serverChannelInput = configScreen:addInput()
     :setPosition(2, 11)
+    :setSize("{parent.width - 4}", 1)
+    :setBackground(colors.black)
+    :setForeground(colors.white)
+    :setPlaceholder("100")
+    :setText("100")
+
+configScreen:addLabel(coloring)
+    :setText("Client Channel:")
+    :setPosition(2, 13)
+
+local clientChannelInput = configScreen:addInput()
+    :setPosition(2, 14)
+    :setSize("{parent.width - 4}", 1)
+    :setBackground(colors.black)
+    :setForeground(colors.white)
+    :setPlaceholder("200")
+    :setText("200")
+
+configScreen:addLabel(coloring)
+    :setText("Installation Path:")
+    :setPosition(2, 16)
+
+local installPathInput = configScreen:addInput()
+    :setPosition(2, 17)
     :setSize("{parent.width - 4}", 1)
     :setBackground(colors.black)
     :setForeground(colors.white)
@@ -216,7 +253,7 @@ local installPathInput = configScreen:addInput()
 local startupCheckbox = configScreen:addCheckBox(coloring)
     :setText("[ ] Run server on startup")
     :setCheckedText("[x] Run server on startup")
-    :setPosition(2, 13)
+    :setPosition(2, 19)
     :setChecked(false)
 
 -- Screen 3: Installation Progress
@@ -254,6 +291,16 @@ local function installServer()
     local passwordSalt = passwordSaltInput:getText()
     if passwordSalt == "" then
         passwordSalt = "mayor_server_salt_2024"
+    end
+    
+    local serverChannel = tonumber(serverChannelInput:getText())
+    if not serverChannel or serverChannel < 0 or serverChannel > 65535 then
+        serverChannel = 100
+    end
+    
+    local clientChannel = tonumber(clientChannelInput:getText())
+    if not clientChannel or clientChannel < 0 or clientChannel > 65535 then
+        clientChannel = 200
     end
     
     local installPath = installPathInput:getText()
@@ -311,9 +358,23 @@ local function installServer()
         type = "string"
     })
     
+    settings.define("mayor.server_channel", {
+        description = "Server communication channel",
+        default = 100,
+        type = "number"
+    })
+    
+    settings.define("mayor.client_channel", {
+        description = "Client communication channel",
+        default = 200,
+        type = "number"
+    })
+    
     settings.load()
     settings.set("mayor.encryption_key", encryptionKey)
     settings.set("mayor.password_salt", passwordSalt)
+    settings.set("mayor.server_channel", serverChannel)
+    settings.set("mayor.client_channel", clientChannel)
     
     if settings.save() then
         logMessage(log, "Settings configured and saved")
@@ -347,6 +408,8 @@ local function installServer()
     logMessage(log, "Server installed to: " .. installPath)
     logMessage(log, "Encryption Key: " .. encryptionKey)
     logMessage(log, "Password Salt: " .. passwordSalt)
+    logMessage(log, "Server Channel: " .. serverChannel)
+    logMessage(log, "Client Channel: " .. clientChannel)
     if runOnStartup then
         logMessage(log, "Server will start automatically on boot")
     else

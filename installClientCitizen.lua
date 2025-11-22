@@ -33,7 +33,24 @@ if (args[1] == "-q") or (args[1] == "--quick") then
     file.close()
     request.close()
     
+    -- Configure channel settings
+    settings.define("mayor.server_channel", {
+        description = "Server communication channel",
+        default = 100,
+        type = "number"
+    })
+    
+    settings.define("mayor.client_channel", {
+        description = "Client communication channel",
+        default = 200,
+        type = "number"
+    })
+    
+    settings.load()
+    settings.save()
+    
     print("Client installed to: " .. installPath)
+    print("Channel settings configured (Server: 100, Client: 200)")
     print("To run: local client = require(\"" .. installPath:gsub(".lua", "") .. "\"); client.runClient()")
     return
 end
@@ -162,11 +179,35 @@ configScreen:addLabel(coloring)
     :setPosition(2, 2)
 
 configScreen:addLabel(coloring)
-    :setText("Installation Path:")
+    :setText("Server Channel:")
     :setPosition(2, 4)
 
-local installPathInput = configScreen:addInput()
+local serverChannelInput = configScreen:addInput()
     :setPosition(2, 5)
+    :setSize("{parent.width - 4}", 1)
+    :setBackground(colors.black)
+    :setForeground(colors.white)
+    :setPlaceholder("100")
+    :setText("100")
+
+configScreen:addLabel(coloring)
+    :setText("Client Channel:")
+    :setPosition(2, 7)
+
+local clientChannelInput = configScreen:addInput()
+    :setPosition(2, 8)
+    :setSize("{parent.width - 4}", 1)
+    :setBackground(colors.black)
+    :setForeground(colors.white)
+    :setPlaceholder("200")
+    :setText("200")
+
+configScreen:addLabel(coloring)
+    :setText("Installation Path:")
+    :setPosition(2, 10)
+
+local installPathInput = configScreen:addInput()
+    :setPosition(2, 11)
     :setSize("{parent.width - 4}", 1)
     :setBackground(colors.black)
     :setForeground(colors.white)
@@ -176,7 +217,7 @@ local installPathInput = configScreen:addInput()
 local startupCheckbox = configScreen:addCheckBox(coloring)
     :setText("[ ] Open client on startup")
     :setCheckedText("[x] Open client on startup")
-    :setPosition(2, 7)
+    :setPosition(2, 13)
     :setChecked(false)
 
 -- Screen 3: Installation Progress
@@ -205,6 +246,16 @@ end
 local function installClient()
     currentlyInstalling = true
     installButton:setVisible(false)
+    
+    local serverChannel = tonumber(serverChannelInput:getText())
+    if not serverChannel or serverChannel < 0 or serverChannel > 65535 then
+        serverChannel = 100
+    end
+    
+    local clientChannel = tonumber(clientChannelInput:getText())
+    if not clientChannel or clientChannel < 0 or clientChannel > 65535 then
+        clientChannel = 200
+    end
     
     local installPath = installPathInput:getText()
     if installPath == "" then
@@ -247,6 +298,30 @@ local function installClient()
     updateProgress(progressBar, 70)
     logMessage(log, "Client file installed")
     
+    -- Configure channel settings
+    logMessage(log, "Configuring channel settings...")
+    settings.define("mayor.server_channel", {
+        description = "Server communication channel",
+        default = 100,
+        type = "number"
+    })
+    
+    settings.define("mayor.client_channel", {
+        description = "Client communication channel",
+        default = 200,
+        type = "number"
+    })
+    
+    settings.load()
+    settings.set("mayor.server_channel", serverChannel)
+    settings.set("mayor.client_channel", clientChannel)
+    
+    if settings.save() then
+        logMessage(log, "Channel settings configured")
+    else
+        logMessage(log, "Warning: Could not save channel settings")
+    end
+    
     updateProgress(progressBar, 85)
     
     -- Create startup file if requested
@@ -271,6 +346,8 @@ local function installClient()
     logMessage(log, "Installation complete!")
     logMessage(log, "")
     logMessage(log, "Client installed to: " .. installPath)
+    logMessage(log, "Server Channel: " .. serverChannel)
+    logMessage(log, "Client Channel: " .. clientChannel)
     if runOnStartup then
         logMessage(log, "Client will open automatically on boot")
         logMessage(log, "")

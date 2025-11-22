@@ -22,15 +22,14 @@ A complete city information and plot application system for ComputerCraft using 
 
 ### Server Installation
 
-1. Download and run the server installer:
+1. Run the server installer directly:
    ```bash
-   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installServer.lua installServer.lua
-   installServer.lua
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installServer.lua
    ```
 
 2. Or use quick install mode:
    ```bash
-   installServer.lua -q
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installServer.lua -q
    ```
 
 3. Start the server:
@@ -46,15 +45,14 @@ A complete city information and plot application system for ComputerCraft using 
 
 ### Mayor Client Installation
 
-1. Download and run the mayor client installer:
+1. Run the mayor client installer directly:
    ```bash
-   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientMayor.lua installClientMayor.lua
-   installClientMayor.lua
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientMayor.lua
    ```
 
 2. Or use quick install mode:
    ```bash
-   installClientMayor.lua -q
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientMayor.lua -q
    ```
 
 3. Start the mayor client:
@@ -70,15 +68,14 @@ A complete city information and plot application system for ComputerCraft using 
 
 ### Citizen Client Installation
 
-1. Download and run the citizen client installer:
+1. Run the citizen client installer directly:
    ```bash
-   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientCitizen.lua installClientCitizen.lua
-   installClientCitizen.lua
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientCitizen.lua
    ```
 
 2. Or use quick install mode:
    ```bash
-   installClientCitizen.lua -q
+   wget run https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientCitizen.lua -q
    ```
 
 3. Start the citizen client:
@@ -154,9 +151,16 @@ set mayor.password_salt your_custom_salt
 
 ## Network Protocol
 
-- **Server Channel**: 100
-- **Client Channel**: 200
+- **Server Channel**: Configurable (default: 100)
+- **Client Channel**: Configurable (default: 200)
 - All communication uses ComputerCraft's modem system
+- Channels are configured during installation and stored in settings
+- To change channels after installation, use:
+  ```
+  set mayor.server_channel <channel_number>
+  set mayor.client_channel <channel_number>
+  ```
+  Then restart the server/client.
 
 ## License
 
