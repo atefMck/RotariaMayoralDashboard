@@ -5,17 +5,17 @@ local ACCOUNTS_FILE = "accounts.dat"
 local accounts = {}
 local nextAccountId = 1
 
--- Define and load password salt from settings (same as CogMail)
-settings.define("email.password_salt", {
+-- Define and load password salt from settings
+settings.define("mayor.password_salt", {
     description = "Salt key for password hashing",
-    default = "email_server_salt_2024",
+    default = "mayor_server_salt_2024",
     type = "string"
 })
 settings.load()
 
--- Password hashing function (same as CogMail)
+-- Password hashing function
 local function hashPassword(password, salt)
-    salt = salt or settings.get("email.password_salt")
+    salt = salt or settings.get("mayor.password_salt")
     local hash = password .. salt
     
     -- Multiple rounds of transformation for better security

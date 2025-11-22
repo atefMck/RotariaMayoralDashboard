@@ -20,22 +20,20 @@ A complete city information and plot application system for ComputerCraft using 
 
 ## Installation
 
-### Installing Basalt2
-
-First, install Basalt2 on all computers (server and clients):
-
-```bash
-wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/release/basalt-full.lua basalt.lua
-```
-
 ### Server Installation
 
-1. Download and install the server using wget:
+1. Download and run the server installer:
    ```bash
-   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaServer.lua rotariaServer.lua
+   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installServer.lua installServer.lua
+   installServer.lua
    ```
 
-2. Start the server:
+2. Or use quick install mode:
+   ```bash
+   installServer.lua -q
+   ```
+
+3. Start the server:
    ```bash
    local server = require("rotariaServer")
    server.runServer()
@@ -48,12 +46,18 @@ wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/releas
 
 ### Mayor Client Installation
 
-1. Download and install the mayor client using wget:
+1. Download and run the mayor client installer:
    ```bash
-   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaClientMayor.lua rotariaClientMayor.lua
+   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientMayor.lua installClientMayor.lua
+   installClientMayor.lua
    ```
 
-2. Start the mayor client:
+2. Or use quick install mode:
+   ```bash
+   installClientMayor.lua -q
+   ```
+
+3. Start the mayor client:
    ```bash
    local client = require("rotariaClientMayor")
    client.runClient()
@@ -66,12 +70,18 @@ wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/releas
 
 ### Citizen Client Installation
 
-1. Download and install the citizen client using wget:
+1. Download and run the citizen client installer:
    ```bash
-   wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/refs/heads/main/build/rotariaClientCitizen.lua rotariaClientCitizen.lua
+   wget https://raw.githubusercontent.com/atefMck/RotariaMayoralDashboard/refs/heads/main/installClientCitizen.lua installClientCitizen.lua
+   installClientCitizen.lua
    ```
 
-2. Start the citizen client:
+2. Or use quick install mode:
+   ```bash
+   installClientCitizen.lua -q
+   ```
+
+3. Start the citizen client:
    ```bash
    local client = require("rotariaClientCitizen")
    client.runClient()
@@ -86,8 +96,8 @@ wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/releas
 
 When the server starts for the first time, it automatically creates a default mayor (admin) account:
 
-- **Username**: `Rotaria City`
-- **Password**: `Rotaria!0!`
+- **Username**: `Rotaria`
+- **Password**: `Rotaria`
 
 **Important**: Change this password immediately after first login for security!
 
@@ -101,18 +111,18 @@ You can use this account to:
 
 ### Server Settings
 
-The server uses the same settings as CogMail for encryption and password hashing:
+The server uses settings for encryption and password hashing:
 
 ```lua
-settings.set("email.encryption_key", "your_custom_encryption_key")
-settings.set("email.password_salt", "your_custom_password_salt")
+settings.set("mayor.encryption_key", "your_custom_encryption_key")
+settings.set("mayor.password_salt", "your_custom_password_salt")
 settings.save()
 ```
 
 Or using the `set` program:
 ```
-set email.encryption_key your_custom_key
-set email.password_salt your_custom_salt
+set mayor.encryption_key your_custom_key
+set mayor.password_salt your_custom_salt
 ```
 
 **Important**: Change these from the defaults for security!
@@ -147,21 +157,6 @@ set email.password_salt your_custom_salt
 - **Server Channel**: 100
 - **Client Channel**: 200
 - All communication uses ComputerCraft's modem system
-
-## Troubleshooting
-
-### Client can't connect to server
-- Ensure server is running
-- Check that both computers have modems attached
-- Verify network connectivity
-
-### Basalt not found
-- Install Basalt2: `wget https://raw.githubusercontent.com/Pyroxenium/Basalt2/refs/heads/main/release/basalt-full.lua basalt.lua`
-- Or place basalt.lua in the same directory as the client
-
-### Authentication errors
-- Verify encryption keys match between server and client
-- Check that account exists and password is correct
 
 ## License
 

@@ -34,15 +34,15 @@ if (args[1] == "-q") or (args[1] == "--quick") then
     request.close()
     
     -- Configure settings
-    settings.define("email.encryption_key", {
+    settings.define("mayor.encryption_key", {
         description = "Encryption key for city server data",
-        default = "email_server_key_2024",
+        default = "mayor_server_key_2024",
         type = "string"
     })
     
-    settings.define("email.password_salt", {
+    settings.define("mayor.password_salt", {
         description = "Salt key for password hashing",
-        default = "email_server_salt_2024",
+        default = "mayor_server_salt_2024",
         type = "string"
     })
     
@@ -186,8 +186,8 @@ local encryptionKeyInput = configScreen:addInput()
     :setSize("{parent.width - 4}", 1)
     :setBackground(colors.black)
     :setForeground(colors.white)
-    :setPlaceholder("email_server_key_2024")
-    :setText("email_server_key_2024")
+    :setPlaceholder("mayor_server_key_2024")
+    :setText("mayor_server_key_2024")
 
 configScreen:addLabel(coloring)
     :setText("Password Salt:")
@@ -198,8 +198,8 @@ local passwordSaltInput = configScreen:addInput()
     :setSize("{parent.width - 4}", 1)
     :setBackground(colors.black)
     :setForeground(colors.white)
-    :setPlaceholder("email_server_salt_2024")
-    :setText("email_server_salt_2024")
+    :setPlaceholder("mayor_server_salt_2024")
+    :setText("mayor_server_salt_2024")
 
 configScreen:addLabel(coloring)
     :setText("Installation Path:")
@@ -248,12 +248,12 @@ local function installServer()
     
     local encryptionKey = encryptionKeyInput:getText()
     if encryptionKey == "" then
-        encryptionKey = "email_server_key_2024"
+        encryptionKey = "mayor_server_key_2024"
     end
     
     local passwordSalt = passwordSaltInput:getText()
     if passwordSalt == "" then
-        passwordSalt = "email_server_salt_2024"
+        passwordSalt = "mayor_server_salt_2024"
     end
     
     local installPath = installPathInput:getText()
@@ -299,21 +299,21 @@ local function installServer()
     
     -- Configure settings
     logMessage(log, "Configuring settings...")
-    settings.define("email.encryption_key", {
+    settings.define("mayor.encryption_key", {
         description = "Encryption key for city server data",
-        default = "email_server_key_2024",
+        default = "mayor_server_key_2024",
         type = "string"
     })
     
-    settings.define("email.password_salt", {
+    settings.define("mayor.password_salt", {
         description = "Salt key for password hashing",
-        default = "email_server_salt_2024",
+        default = "mayor_server_salt_2024",
         type = "string"
     })
     
     settings.load()
-    settings.set("email.encryption_key", encryptionKey)
-    settings.set("email.password_salt", passwordSalt)
+    settings.set("mayor.encryption_key", encryptionKey)
+    settings.set("mayor.password_salt", passwordSalt)
     
     if settings.save() then
         logMessage(log, "Settings configured and saved")

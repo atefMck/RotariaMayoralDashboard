@@ -24,12 +24,12 @@ Plots.load()
 CityInfo.load()
 
 -- Create default admin account if it doesn't exist
-local defaultAdmin = Accounts.findByUsername("Rotaria City")
+local defaultAdmin = Accounts.findByUsername("Rotaria")
 if not defaultAdmin then
     print("Creating default admin account...")
-    local success, result = Accounts.create("Rotaria City", "Rotaria!0!", "admin")
+    local success, result = Accounts.create("Rotaria", "Rotaria", "admin")
     if success then
-        print("Default admin account created: Rotaria City")
+        print("Default admin account created: Rotaria")
     else
         print("Warning: Failed to create default admin account: " .. tostring(result))
     end
@@ -50,13 +50,20 @@ print("  - update_city_info: Update city information (admin only)")
 print("")
 
 -- Event Loop
-while true do
+local running = true
+while running do
     local success, err = pcall(function()
-        local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
+        local event, side, channel, replyChannel, message, distance = os.pullEvent()
         
-        if channel == SERVER_CHANNEL then
-            print("Received message on channel " .. channel .. " from reply channel " .. replyChannel)
-            Protocol.processMessage(channel, replyChannel, message, distance, modem)
+        if event == "terminate" then
+            print("Server shutdown requested...")
+            running = false
+            break
+        elseif event == "modem_message" then
+            if channel == SERVER_CHANNEL then
+                print("Received message on channel " .. channel .. " from reply channel " .. replyChannel)
+                Protocol.processMessage(channel, replyChannel, message, distance, modem)
+            end
         end
     end)
     
@@ -65,4 +72,6 @@ while true do
         -- Continue running the server even if there's an error
     end
 end
+
+print("Server stopped.")
 

@@ -1,16 +1,16 @@
 -- Encryption/Decryption Module
 local Encryption = {}
 
--- Define and load encryption key from settings (same as CogMail)
-settings.define("email.encryption_key", {
+-- Define and load encryption key from settings
+settings.define("mayor.encryption_key", {
     description = "Encryption key for city server data",
-    default = "email_server_key_2024",
+    default = "mayor_server_key_2024",
     type = "string"
 })
 settings.load()
 
 function Encryption.encrypt(data, key)
-    key = key or settings.get("email.encryption_key")
+    key = key or settings.get("mayor.encryption_key")
     if type(data) ~= "string" then
         data = textutils.serialize(data)
     end
@@ -25,7 +25,7 @@ function Encryption.encrypt(data, key)
 end
 
 function Encryption.decrypt(encrypted, key)
-    key = key or settings.get("email.encryption_key")
+    key = key or settings.get("mayor.encryption_key")
     local decrypted = {}
     local keyLen = #key
     for i = 1, #encrypted do
